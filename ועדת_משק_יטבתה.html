@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ועדת משק יטבתה – שאל את הפרוטוקולים</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a3a5c 0%, #0d5c8a 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+
+  .logo {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  header h1 { font-size: 18px; font-weight: 700; }
+  header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 76px);
+  }
+
+  .chat-box {
+    flex: 1;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .message {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .message.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .avatar.ai { background: #e8f4fd; color: #0d5c8a; }
+  .avatar.user { background: #1a3a5c; color: white; font-size: 13px; font-weight: 700; }
+
+  .bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .message.ai .bubble {
+    background: #f7f9fc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px 14px 14px 14px;
+  }
+
+  .message.user .bubble {
+    background: #1a3a5c;
+    color: white;
+    border-radius: 14px 4px 14px 14px;
+  }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .topic-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topic-btn {
+    background: #1a3a5c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 600;
+  }
+
+  .topic-btn:hover { background: #0d5c8a; }
+  .topic-btn.active { background: #0d5c8a; box-shadow: 0 0 0 2px #bdd8f0; }
+
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .topic-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .topic-btn {
+    background: #1a3a5c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 600;
+  }
+
+  .topic-btn:hover { background: #0d5c8a; }
+  .topic-btn.active { background: #0d5c8a; box-shadow: 0 0 0 2px #bdd8f0; }
+
+  .suggestion-btn {
+    background: #e8f4fd;
+    border: 1px solid #bdd8f0;
+    color: #0d5c8a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .suggestion-btn:hover {
+    background: #0d5c8a;
+    color: white;
+    border-color: #0d5c8a;
+  }
+
+  .input-area {
+    display: flex;
+    gap: 10px;
+    background: white;
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    direction: rtl;
+    line-height: 1.5;
+    padding: 4px 8px;
+    color: #1a1a2e;
+    min-height: 40px;
+    max-height: 120px;
+  }
+
+  button#send {
+    background: #1a3a5c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 44px; height: 44px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+
+  button#send:hover { background: #0d5c8a; }
+  button#send:disabled { background: #ccc; cursor: not-allowed; }
+
+  .typing {
+    display: flex; gap: 4px; align-items: center; padding: 8px 0;
+  }
+  .typing span {
+    width: 7px; height: 7px;
+    background: #0d5c8a;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    padding: 6px 0 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌾</div>
+  <div>
+    <h1>ועדת משק יטבתה</h1>
+    <p>שאל שאלות על פרוטוקולי הוועדה · 2021–2026</p>
+  </div>
+</header>
+
+<div class="container">
+  <div class="chat-box" id="chatBox">
+    <div class="message ai">
+      <div class="avatar ai">🤖</div>
+      <div>
+        <div class="bubble">שלום! אני מכיר את כל פרוטוקולי ועדת המשק של יטבתה משנת 2021 ועד 2026.
+
+בחר נושא לשאלות מוכנות, או כתוב שאלה חופשית למטה.</div>
+        <div class="topic-row">
+          <button class="topic-btn" onclick="showTopic(this, 'business')">🚀 פיתוח עסקי</button>
+          <button class="topic-btn" onclick="showTopic(this, 'results')">📊 תוצאות עסקיות</button>
+          <button class="topic-btn" onclick="showTopic(this, 'branches')">🌾 ענפים</button>
+        </div>
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <button id="send" onclick="sendMessage()" title="שלח">➤</button>
+    <textarea id="userInput" placeholder="כתוב שאלה על הפרוטוקולים..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+  </div>
+  <div class="disclaimer">המידע מבוסס על פרוטוקולי ועדת המשק של קיבוץ יטבתה בלבד</div>
+</div>
+
+<script>
+const API_KEY = "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";
+
+const PROTOCOLS_CONTEXT = `
+להלן תמצית פרוטוקולי ועדת המשק של קיבוץ יטבתה לשנים 2021–2026:
+
+=== 23.11.2021 – ברוול: בחינת השקעה ראשונה ===
+הוצגה חברת ברוול – טכנולוגיה לגידול אצות בפרמנטורים לייצור חלבון. החברה קשורה למחלבות יטבתה ושטראוס. הדילמה: חברה מרשימה אך זו השקעת הון סיכון שאינה באסטרטגיה הנוכחית.
+החלטה: להמשיך בבחינת השקעה ולנסות להכניס "רגל בדלת".
+
+=== 19.12.2021 – ברוול: אישור השקעה ===
+אושרה השקעה של 1 מיליון דולר בחברת ברוול, פה אחד. כחלק מההסכם – זכות השתתפות בדיוני הקמת מפעל לחמש שנים. בוטלה השקעה בחברת האצות (צחור) ובפאולי.
+
+=== 19.12.2021 – וי-קורלס ===
+אושרה השקעה של 250 אלף דולר בחברת וי-קורלס (118+132 אלף דולר).
+
+=== 19.12.2021 – מסגרייה ===
+מונה שחר צומברג כרכז ענף המסגרייה.
+
+=== 31.07.2022 – דיון עקרוני הקמת מפעל ברוול ===
+ברוול הציעה הקמת מפעל שני בערבה. שטח 4–6 דונם, 50 עובדים, השקעה ~50 מש"ח לאחר מענקים.
+לא התקבלו החלטות. הנושא יחזור לדיון.
+
+=== 30.11.2025 – הקצאת קרקע לברוול ===
+הוצגה בקשה להקצאת מגרש 4231 (6,511 מ"ר) לצורך הקמת מפעל ברוול. מנכ"ל ברוול יונתן גולן הציג את הטכנולוגיה. מיקום: פינה צפון-מזרחית. יועצים: פיני קמרי, טל פריימן, ערן ראובני.
+החלטה: הוועדה מאשרת הגשה לאסיפה לאישור הקצאת קרקע בלבד (לא אישור הקמת מפעל).
+
+=== 29.03.2026 – ישיבה ראשונה ייעודית ברוול ===
+כ-90% מרווחי המשק מגיעים מהמחלבה. טכנולוגיה: פרמנטציה חשוכה לייצור חלבון כלורלה. מודל מדורג:
+שלב 1 (2027): פרמנטור 25,000 ל' בקרית גת – 3 מיליון דולר.
+שלב 2 (2030): מפעל מלא יטבתה – 14 מיליון דולר. שותפות 50/50. מיקום: נוף אדום.
+החלטה: לקיים דיון ייעודי מלא.
+
+=== 10.05.2026 – הצגת רציונל אסטרטגי ===
+שוק חלבון ממיקרו-אצות: 840 מיליון דולר היום, צפי 2.7 מיליארד ב-2032. IRR פרויקט 16.5%, IRR קיבוץ 12%. 20–30 עובדים. אין חסמים רגולטוריים לביומסה.
+לא התקבלה החלטה סופית.
+
+=== 17.05.2026 – תוכנית עסקית מלאה ===
+שלב א' (קרית גת): 3M$. שלב ב' (יטבתה 2028–2030): 15M$, 430 טון/שנה. שלב ג' (2032+): 12M$, 1,200 טון/שנה. סה"כ 30M$ לפני מענקים.
+מחיר מכירה: $18/ק"ג → $12. עלויות: $19 → $7.5 → $5. דיבידנד 75% יטבתה עד החזר, אחר כך 50/50. החזר השקעה 8 שנים. מענקים 20–30%.
+החלטה: הוועדה רואה הזדמנות אסטרטגית. יוצגו לאסיפה תוך חודש-חודשיים.
+
+=== 24.05.2026 – הון אנושי, מימון, מיקום ===
+מחיר שוק: $35–40/ק"ג בעסקאות בפועל. IRR פסימי (ירידת מחיר+עלות 30%) עדיין חיובי.
+הון אנושי שלב א': 22 משרות (4 מטה, 6 מקצועי, 12 ייצור). שלב ב': 34 משרות.
+מימון: ~50 מיליון ₪. 3 אפשרויות: (א) הלוואה דרך המיזם, (ב) הלוואה דרך קיבוץ, (ג) מינוף חלקי. כישלון טוטאלי = 6M₪/שנה לעשור – לא מסכן את יטבתה.
+חשיפה מקסימלית: 50M₪. עלתה אפשרות שותפות עם קיבוצי ערבה.
+החלטה: ניתוח מימון מפורט בישיבה הבאה. צעדים מקדמיים מול החברה הכלכלית.
+
+=== נושאים נוספים בפרוטוקולים ===
+
+שכר עבודת חברים:
+- 22.12.2024: שכר חברים יגדל ב-6% ב-2025 → 167,400 ₪ עלות מעביד שנתית (במקום 11.1% לפי הנוסחה).
+- 21.12.2025: דיון בעדכון שכר 2026, הצגת מודל שכר חדש.
+
+מקורות ושימושים:
+- 2025: הכנסות 127M₪, הוצאות 125M₪. עלויות מחיה 102M₪, השקעות צרכניות שוטפות 4M₪, קרנות 19M₪.
+- תקציב השקעות 2026: 5.8M₪ (4.3M₪ פחת + 1.5M₪ צמיחה + קרן רב-שנתית 2M₪).
+
+השקעות יצרניות 2026 שאושרו:
+- רפת: 1.46M₪ (סלף, קירור, חשמל)
+- חניון/פונדק: 1.7M₪ (ציוד מטבח, רכב)
+- שלחין: 0.6M₪ (טרקטור, מלגזה)
+- תמרים: 0.7M₪ (טרקטור, ציוד)
+
+פרויקט אגרו-סולארי וחרובים (29.03.2026):
+שותפות עם דוראל – 150 דונם. שלב ראשון: 50 דונם חרובים. הכנסה בטוחה: 4,200₪/דונם/שנה. הקמה: סוף 2026.
+החלטה: אישור קידום היתרים וחתימה עם "דרך החרוב".
+
+עופאים (ביצים):
+דיונים מרובים 2024–2025 על תוצאות, תקציב ואתגרים בענף.
+
+אלמוגים ופלנטופיה:
+דיונים 2024 על השקעות והתפתחות.
+
+פריסימוס:
+דיונים 2022–2026 על כניסת משקיע, הגדלת אחזקות, ותמחור.
+
+ברוול שדה סולארי ומילואוטיס:
+ישיבה 07.07.2024 – דיון בשדה סולארי ואחזקות.
+
+רפת חלב ערבה – ישיבה 24.06.2026:
+אישור פרויקט העתקת מרכז מזון (3M₪ מקרן בנייה חדשה). קבלן: אדרים. ביצוע מ-20/07/2026.
+אישור חידוש 2 חדרי חשמל (שני חדרים בני 40 שנה, מצב קריטי).
+
+ערבה פאוור / מתח גבוה (06.04.2025):
+דיון בשדרוג תשתיות חשמל ושיתוף פעולה עם ערבה פאוור.
+
+ריכוז ענף הרפת:
+דיונים 2022 על מינוי רכז ענף. מונה אלי דיין (03.2023).
+
+ערדג / AIGAS:
+דיונים 2022–2024 על פיתוח עסקי ומימוש נכסים.
+`;
+
+const SYSTEM_PROMPT = `אתה עוזר חכם של ועדת המשק של קיבוץ יטבתה. 
+התפקיד שלך: לענות על שאלות על פרוטוקולי הוועדה בצורה ברורה, מדויקת ותמציתית.
+
+כללים:
+1. ענה תמיד בעברית.
+2. בסס תשובות רק על הפרוטוקולים שניתנו לך.
+3. ציין תאריכים כשרלוונטי.
+4. אם המידע לא נמצא בפרוטוקולים – אמור זאת בכנות.
+5. היה ידידותי וישיר.
+
+${PROTOCOLS_CONTEXT}`;
+
+let history = [];
+
+const TOPICS = {
+  business: [
+    'סכם את כל הדיונים בנושא ברוול',
+    'מה הוחלט לגבי השקעה בפריסימוס?',
+    'אילו חברות נבחנו להשקעה בשנים האחרונות?',
+    'מה מצב ההשקעה בוי-קורלס ואלמוגים?'
+  ],
+  results: [
+    'מה היו תוצאות המשק בשנת 2024?',
+    'מה גובה שכר העבודה הנוכחי של חברי יטבתה?',
+    'מה מסגרת תקציב ההשקעות ל-2026?',
+    'מה מקורות ההכנסה העיקריים של הקיבוץ?'
+  ],
+  branches: [
+    'מה קורה בענף העופות (עופאים)?',
+    'מה המצב בענף הרפת ומחלבת יטבתה?',
+    'מה נדון לגבי ענף התמרים?',
+    'מה הסטטוס של ענף השלחין?'
+  ]
+};
+
+function showTopic(btn, topic) {
+  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const box = document.getElementById('suggestions');
+  box.innerHTML = '';
+  TOPICS[topic].forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'suggestion-btn';
+    b.textContent = q;
+    b.onclick = () => askSuggestion(b);
+    box.appendChild(b);
+  });
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage('user', text);
+  
+  const typingId = addTyping();
+  document.getElementById('send').disabled = true;
+
+  history.push({ role: 'user', content: text });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: history
+      })
+    });
+
+    const data = await res.json();
+    removeTyping(typingId);
+
+    const reply = data.content?.[0]?.text || 'אירעה שגיאה. נסה שוב.';
+    history.push({ role: 'assistant', content: reply });
+    addMessage('ai', reply);
+
+  } catch (e) {
+    removeTyping(typingId);
+    addMessage('ai', 'שגיאת חיבור. בדוק את החיבור לאינטרנט ונסה שוב.');
+  }
+
+  document.getElementById('send').disabled = false;
+  input.focus();
+}
+
+function addMessage(role, text) {
+  const box = document.getElementById('chatBox');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.innerHTML = `
+    <div class="avatar ${role}">${role === 'ai' ? '🤖' : 'חב'}</div>
+    <div class="bubble">${escapeHtml(text)}</div>
+  `;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addTyping() {
+  const box = document.getElementById('chatBox');
+  const id = 'typing-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.id = id;
+  div.innerHTML = `
+    <div class="avatar ai">🤖</div>
+    <div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>
+  `;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function askSuggestion(btn) {
+  document.getElementById('userInput').value = btn.textContent;
+  sendMessage();
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+</script>
+</body>
+</html>
